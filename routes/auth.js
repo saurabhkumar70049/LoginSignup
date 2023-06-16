@@ -1,8 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
+import {v4 as uuid4} from "uuid"; // here we use uuid to generate token and "as" is stand for alice and it is use refference the any object and any thing
 import bcrypt from "bcrypt"; //it is use for encript and decript the data 
 const authRouter = express.Router();
 const user = mongoose.model("User");
+import isLoggedIn from "../middleware/isLoggedIn.js";
 
 
 authRouter.post('/signup', (req, res)=> {
@@ -49,22 +51,6 @@ authRouter.post('/signup', (req, res)=> {
     .catch(err=> {
         console.log(err);
     })
-
-
-    
-
-
-
-    // if(!name || !email || !password) {
-    //     return res.send('Please Enter all the data ')
-    // }
-    // else {
-    //     console.log(`name : ${name}, email : ${email}, password : ${password}`);
-    //     return res.send("data Received");
-    // }
-
-
-    //check if user already exist
     
 })
 
@@ -79,19 +65,52 @@ authRouter.post('/login', (req, res)=> {
     //email validation //regex
 
     user.findOne({email: email})
-    .then((foundUser) =>{
-        console.log("foundUser : " , foundUser);
-        if(foundUser == null) {
-            return res.send({error : "User not Found"});
-        }
-        bcrypt.compare(password, foundUser.password)
-        .then((result)=> {
-            if(result == false) {
-                return res.send('Invalid password');
+        .then((foundUser) =>{
+            console.log("foundUser : " , foundUser);
+            if(foundUser == null) {
+                return res.send({error : "User not Found"});
             }
-            return res.send({success: true, message: "User logged in successfully", data: foundUser})
+            bcrypt.compare(password, foundUser.password)
+            .then((result)=> {
+                if(result == false) {
+                    return res.send('Invalid password');
+                }
+
+                //genetate token
+            
+                let token = uuid4();
+                foundUser.token = token;
+                foundUser.save()
+                .then((savedUser)=> {
+                    return res.send({success: true, message: "User logged in successfully", data: savedUser});
+                })
+
+                .catch(err => console.log("issue while saving token in database ", err));
+            })
+    })
+    .catch(err=> {
+        console.log(err=> {
+            console.log("issue while searching email in database", err);
         })
     })
+
 })
+
+authRouter.get("/secret1", isLoggedIn, (req, res)=> {
+    return res.send({success: true, message: "You are authorized to be a raw agent", loggedInAgentDetails : req.user});
+})
+
+authRouter.delete("/logout", isLoggedIn, async(req, res)=> {
+    req.user.token = null;
+    try{
+        let savedUser = await req.user.save();
+        return res.send({success:true, message:"User logged out succefully", data: savedUser});
+    }
+    catch(err) {
+        console.log("logout failed", err);
+    }
+})
+
+//token :- A random set of letters
 
 export default authRouter;

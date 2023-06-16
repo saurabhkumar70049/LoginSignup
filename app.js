@@ -1,10 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
+import "./models/user.js"; //it is called load
+import authRouter from "./routes/auth.js";
+
 const app = express();
 const PORT = 5000;
-import "./models/user.js"; //it is called load
-
-import authRouter from "./routes/auth.js";"./routes/auth.js";
 
 //DataBase connection : there three way to use mongodb 
 //1. Online Mongodb Atlas
