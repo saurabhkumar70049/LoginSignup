@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import "./models/user.js"; //it is called load
 import authRouter from "./routes/auth.js";
 
@@ -21,6 +22,8 @@ mongoose.connection.on("error", ()=> {
     console.log('There is some error');
 });
 
+
+app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRouter); // first argument is for defining path and it not mendatory 
 

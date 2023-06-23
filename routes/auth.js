@@ -5,7 +5,12 @@ import bcrypt from "bcrypt"; //it is use for encript and decript the data
 const authRouter = express.Router();
 const user = mongoose.model("User");
 import isLoggedIn from "../middleware/isLoggedIn.js";
+import jwt from "jsonwebtoken";
+import 'dotenv/config'; //ES5 way to write require('doteven').config
 
+
+//access 
+console.log("secret", process.env.JSON_SECRET_KEY.length);
 
 authRouter.post('/signup', (req, res)=> {
 
@@ -76,16 +81,24 @@ authRouter.post('/login', (req, res)=> {
                     return res.send('Invalid password');
                 }
 
+                //generate token
+                const token = jwt.sign({_id:foundUser._id}, process.env.JSON_SECRET_KEY, {expiresIn: "1h"});
+                
+                // jwt.verify(token, process.env.JSON_SECRET_KEY)
+                return res.send({success: true, message: "User logged in successfully", data: foundUser, token:token});
+                
+                
+                
                 //genetate token
             
-                let token = uuid4();
-                foundUser.token = token;
-                foundUser.save()
-                .then((savedUser)=> {
-                    return res.send({success: true, message: "User logged in successfully", data: savedUser});
-                })
+                // let token = uuid4();
+                // foundUser.token = token;
+                // foundUser.save()
+                // .then((savedUser)=> {
+                //     return res.send({success: true, message: "User logged in successfully", data: savedUser});
+                // })
 
-                .catch(err => console.log("issue while saving token in database ", err));
+                // .catch(err => console.log("issue while saving token in database ", err));
             })
     })
     .catch(err=> {
