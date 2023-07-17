@@ -71,7 +71,7 @@ authRouter.post('/login', (req, res)=> {
 
     user.findOne({email: email})
         .then((foundUser) =>{
-            console.log("foundUser : " , foundUser);
+            // console.log("foundUser : " , foundUser);
             if(foundUser == null) {
                 return res.send({error : "User not Found"});
             }

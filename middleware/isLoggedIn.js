@@ -12,6 +12,7 @@ const isLoggedIn = async(req, res, next) => {
     }
     
     token = token.split(" ")[1];
+    console.log(token);
     // token = token.replace("Bearer ", "");
     try {
         let _id;
@@ -23,7 +24,7 @@ const isLoggedIn = async(req, res, next) => {
             _id = payload._id;
         })
 
-        let foundUser = await user.findOne({_id:payload._id});
+        let foundUser = await user.findOne({_id});
         req.user = foundUser;
         console.log(foundUser);
         next()

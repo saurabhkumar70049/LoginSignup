@@ -12,7 +12,7 @@ const PORT = 5000;
 //2. local computer Mongodb Compass
 
 
-mongoose.connect("mongodb://localhost:27017");
+mongoose.connect("mongodb://localhost:27017/auth");
 // mongoose.connect("mongodb+srv://saurabhbarej:Password07@cluster0.ncpdb62.mongodb.net/?retryWrites=true&w=majority")
 
 mongoose.connection.on("connected",()=> {
